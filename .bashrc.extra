@@ -1,0 +1,33 @@
+if [ -f $HOME/.p4rc ] ; then
+    . $HOME/.p4rc
+fi
+
+export LANGUAGE="C"
+export LANG="C"
+export LC_ALL="C"
+
+autocutsel -s PRIMARY &
+autocutsel &
+
+function build
+{
+    BRANCH=$1
+    sync $BRANCH
+    pushd $HOME/Perforce/Arch_2/PEGASUS_II/Modules/$BRANCH/software/build/bin
+    ./eke --product=pegasus distcc=oldsmar gwroot=1 gw.jar
+    popd
+}
+
+function sync
+{
+    BRANCH=$1
+    p4 sync $HOME/Perforce/Arch_2/PEGASUS_II/Modules/$BRANCH/...
+}
+
+function pcd
+{
+    BRANCH=$1
+    cd $HOME/Perforce/Arch_2/PEGASUS_II/Modules/$BRANCH/software/gateway/controlProcessor/gui/content
+}
+
+PATH=$PATH:$HOME/bin:$HOME/Perforce/TOOLS/CodeReviewTool
