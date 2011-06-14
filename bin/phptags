@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# create tags file for super power editing.. :-)
+#
+# use this script with VIM and cscope and your
+# editing capabilities will improve alot.
+#
+# slaz --> thanks to Gmavroudes for pointing these tools out to me
+#
+SOURCE_FILE_LIST="cscope.files"
+#DIRECTORY_LIST="directories"
+TAGS_FILE="tags"
+CSCOPE_FILE="cscope.out"
+KERNELTAGS=0
+ARCH=""
+
+ROOT_DIR=`pwd`
+TAGS_LINKPATH=$ROOT_DIR/$TAGS_FILE
+CSCOPE_LINKPATH=$ROOT_DIR/$CSCOPE_FILE
+SOURCE_FILE_PATH=$ROOT_DIR/$SOURCE_FILE_LIST
+
+if [ "$1" == "clean" ]; then
+#    find . -name $DIRECTORY_LIST | xargs rm
+    rm -f $TAGS_FILE 
+    rm -f cscope.*
+
+    echo "finished cleaning up ctags and cscope files."
+    exit 0
+fi
+
+if [ "$1" == "kernel" ]; then
+    KERNELTAGS=1
+    echo "Calling native kernel Makefile for tags/cscope"
+    make tags
+    make cscope
+    echo "Done"
+    exit 0;
+fi
+
+if [ -e $SOURCE_FILE_LIST ]; then
+	rm -f $SOURCE_FILE_LIST
+fi
+echo "Collecting source file names and directories"
+find $ROOT_DIR -type f -name "*.php" -print >> $SOURCE_FILE_LIST
+find $ROOT_DIR -type f -name "*.js" -print >> $SOURCE_FILE_LIST
+find $ROOT_DIR -type f -name "*.css" -print >> $SOURCE_FILE_LIST
+
+#find $ROOT_DIR -type d -name "*" -print > $DIRECTORY_LIST
+#SRC_DIRS=`cat $DIRECTORY_LIST`
+
+if [ -e $TAGS_FILE ]; then 
+	rm -f $TAGS_FILE
+fi
+
+# create tags file
+echo "Creating ctags database"
+ctags -L $SOURCE_FILE_LIST
+
+# create cscope.out file
+echo "Creating cscope database"
+cscope -kqbi $SOURCE_FILE_LIST
+
