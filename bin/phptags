@@ -18,6 +18,7 @@ ROOT_DIR=`pwd`
 TAGS_LINKPATH=$ROOT_DIR/$TAGS_FILE
 CSCOPE_LINKPATH=$ROOT_DIR/$CSCOPE_FILE
 SOURCE_FILE_PATH=$ROOT_DIR/$SOURCE_FILE_LIST
+NETBEANS_7_DIR=/usr/local/netbeans-7.1/php/phpstubs/phpruntime/
 
 if [ "$1" == "clean" ]; then
 #    find . -name $DIRECTORY_LIST | xargs rm
@@ -41,9 +42,11 @@ if [ -e $SOURCE_FILE_LIST ]; then
 	rm -f $SOURCE_FILE_LIST
 fi
 echo "Collecting source file names and directories"
+find $NETBEANS_7_DIR -type f -name "*.php" -print >> $SOURCE_FILE_LIST
 find $ROOT_DIR -type f -name "*.php" -print >> $SOURCE_FILE_LIST
 find $ROOT_DIR -type f -name "*.js" -print >> $SOURCE_FILE_LIST
 find $ROOT_DIR -type f -name "*.css" -print >> $SOURCE_FILE_LIST
+find $ROOT_DIR -type f -name "*.html" -print >> $SOURCE_FILE_LIST
 
 #find $ROOT_DIR -type d -name "*" -print > $DIRECTORY_LIST
 #SRC_DIRS=`cat $DIRECTORY_LIST`
@@ -54,7 +57,7 @@ fi
 
 # create tags file
 echo "Creating ctags database"
-ctags -L $SOURCE_FILE_LIST
+ctags --languages="+PHP,+JavaScript,+HTML"  -L $SOURCE_FILE_LIST
 
 # create cscope.out file
 echo "Creating cscope database"
